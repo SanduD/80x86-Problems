@@ -1,0 +1,23 @@
+.MODEL SMALL
+.STACK 32
+.DATA
+NUMAR1 DW 3
+NUMAR2 DW 6
+.CODE
+EXTRN SUM:PROC
+START:       	
+		MOV AX, @DATA
+		MOV DS, AX                       
+		PUSH [NUMAR1]
+		PUSH [NUMAR2]
+		CALL SUM
+		
+		MOV DL,AL
+		ADD DL,30h
+		MOV AH,02h
+		INT 21h
+		
+		MOV AH, 4Ch
+		INT 21h
+		END START
+END

@@ -1,0 +1,32 @@
+	DOSSEG
+	.MODEL SMALL
+	.STACK 32
+	.DATA
+Msg	DB 'Toader Radu$' 	; 7 pare
+
+	.CODE
+START:	MOV AX,@DATA
+	MOV DS,AX
+	
+	MOV SI,OFFSET Msg
+	MOV AX,0
+	MOV CX,0		; contor pentru nr pare
+	MOV BX,0		; contor pentru parcurgere sir
+LOOP1:	MOV AL,[SI+BX]
+	AND AX,01h
+	JNZ NEXT
+	INC CX
+NEXT:	MOV AL,[SI+BX]
+	INC BX
+	CMP AL,'$'
+	JE FIN
+	JMP LOOP1
+
+FIN:	MOV AH,2
+	MOV DL,CL
+	ADD DL,30h
+	INT 21h
+	
+	MOV AH,4CH
+	INT 21H
+	END START

@@ -1,0 +1,94 @@
+.MODEL SMALL
+.DATA
+SIR   DB 'Introduceti un numar: $';
+KBD   DB 6,0,0,0,0,0,0,0
+NUMAR DW 0
+.CODE
+PUBLIC writeInt
+PUBLIC readInt
+
+readInt PROC
+	PUSH BP
+	MOV BP,SP
+		
+	SUB SP,8
+	MOV [BP-2],10000
+	MOV [BP-4],1000
+	MOV word ptr [BP-6],100
+	MOV word ptr [BP-8],10
+		
+	MOV AH,09H
+	MOV DL, (OFFSET SIR)
+	INT 21H
+	
+	MOV AH,0AH
+	MOV DL, (OFFSET KBD)
+	INT 21H
+	
+	MOV AH,02H
+	MOV DL,0AH
+	INT 21H
+	MOV DL,0DH
+	INT 21H
+	
+	; ASCII->BINAR
+	MOV CH,0
+	MOV CL,[KBD+1]
+	MOV BX,10
+	MOV SI,(OFFSET KBD)+2
+NEXTT:	MOV AX,[NUMAR]
+	MUL BX
+	MOV DL,[SI]
+	MOV DH,0
+	AND DL,0FH
+	ADD AX,DX
+	MOV [NUMAR],AX
+	INC SI
+	LOOP NEXTT
+	MOV AX,[NUMAR];
+	
+	MOV SP,BP
+	POP BP
+	
+	RET
+readInt ENDP
+	;
+
+writeInt PROC
+	PUSH BP
+	MOV BP,SP
+
+	SUB SP,8
+	MOV [BP-2],10000
+	MOV [BP-4],1000
+	MOV word ptr [BP-6],100
+	MOV word ptr [BP-8],10
+
+	MOV BX,[BP+4]
+
+	MOV SI,BP
+	SUB SI,2
+	MOV CX,4
+NEXT:	MOV AX,BX
+	MOV DX,0
+	DIV word ptr SS:[SI]
+	MOV BX,DX
+	OR AL,30H
+	MOV AH,02H
+	MOV DL,AL
+	INT 21H
+	;afisare
+	SUB SI,2
+	LOOP NEXT
+	MOV AH,02H
+	MOV DL,BL
+	OR DL,30H
+	INT 21H
+
+	SUB SP,8
+	MOV SP,BP
+	POP BP
+	
+	RET
+writeInt ENDP
+END
